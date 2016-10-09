@@ -5,8 +5,7 @@ COPY ./ /app
 WORKDIR /app
 
 RUN npm install
-RUN npm install forever -g
 
 EXPOSE 8080
 
-ENTRYPOINT ["forever", "server.js"]
+ENTRYPOINT ["npm", "start"]
