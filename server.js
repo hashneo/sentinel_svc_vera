@@ -68,8 +68,8 @@ portfinder.getPort(function (err, port) {
             }
         };
         
-        etcd.del('sentinel/modules/' + module.name );
-        etcd.set('sentinel/modules/' + module.name, JSON.stringify(module));
+        //etcd.del('sentinel/modules/' + module.name );
+        //etcd.set('sentinel/modules/' + module.name, JSON.stringify(module));
 
         console.log('Plugin Server Listening on %s:%d', this.address().address, this.address().port);
 
