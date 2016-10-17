@@ -58,11 +58,11 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
             id: uuid.v4(),
             name: 'sentinel_vera',
             address: host,
-            port: port,
+            port: port/*,
             check:{
                 http: `http://${host}:${port}/health`,
                 interval:'15s'
-            }
+            }*/
         };
 
         consul.agent.service.register(module)
