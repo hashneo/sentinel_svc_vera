@@ -9,7 +9,7 @@ function vera(config) {
 
     const redis = require('redis');
 
-    let pub = redis.createClient({ host: process.env.REDIS });
+    let pub = redis.createClient({ host: process.env.REDIS || '127.0.0.1' });
 
     var NodeCache = require( "node-cache" );
 

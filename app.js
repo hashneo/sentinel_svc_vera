@@ -33,8 +33,12 @@ var config = {
 consul.kv.get('config/sentinel/vera', function(err, result) {
     if (err) throw err;
 
-    let config = JSON.parse(result.Value);
-
+    let config;
+    if ( result )
+        config = JSON.parse(result.Value);
+    else{
+        config = { server: '10.0.1.7'}
+    };
     global.vera = require('./vera.js')(config);
 });
 
@@ -48,6 +52,8 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
     // install middleware
     swaggerExpress.register(app);
 
+    let serviceId = process.env.SERVICE_ID || uuid.v4();
+
     var port = process.env.PORT || 5000;
     var server = app.listen(port, () => {
 
@@ -55,15 +61,17 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
         let port = server.address().port;
 
         var module = {
-            id: uuid.v4(),
+            id: serviceId,
             name: 'sentinel_vera',
             address: host,
-            port: port/*,
+            port: port,
             check:{
-                http: `http://${host}:${port}/health`,
+                http: `http://${host}:${port}/health?id=${serviceId}`,
                 interval:'15s'
-            }*/
+            }
         };
+
+        process.env.SERVICE_ID = serviceId;
 
         consul.agent.service.register(module)
             .then( (err, result) =>{
@@ -76,7 +84,7 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
     });
 
     if (swaggerExpress.runner.swagger.paths['/health']) {
-        console.log(`you can get /health on port ${port}`);
+        console.log(`you can get /health?id=${serviceId} on port ${port}`);
     }
 
 });
