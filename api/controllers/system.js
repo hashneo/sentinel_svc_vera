@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.getSystem = (req, res) => {
+module.exports.getDevices = (req, res) => {
     global.vera.getDevices()
         .then( (devices) => {
             res.json( { data: devices, result : 'ok'  } );

@@ -31,7 +31,7 @@ function vera(config) {
     });
 
     statusCache.on( "set", function( key, value ){
-        pub.publish("vera.device.update",  JSON.stringify( { id : key, value : value } ) );
+        pub.publish("device.update",  JSON.stringify( { module: 'vera', id : key, value : value } ) );
     });
 
     function call(url) {
