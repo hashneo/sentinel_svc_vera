@@ -217,6 +217,9 @@ function vera(config) {
 
                     fulfill(devices);
                 })
+                .catch((err) => {
+                    reject(err);
+                })
         });
     };
 
@@ -343,6 +346,9 @@ function vera(config) {
             }
 
             setInterval(pollSystem, 500);
+        })
+        .catch((err) => {
+            process.exit(1);
         });
 
 }

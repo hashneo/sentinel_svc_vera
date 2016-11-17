@@ -33,12 +33,8 @@ var config = {
 consul.kv.get('config/sentinel/vera', function(err, result) {
     if (err) throw err;
 
-    let config;
-    if ( result )
-        config = JSON.parse(result.Value);
-    else{
-        config = { server: '10.0.1.7'}
-    };
+    let config = JSON.parse(result.Value);
+
     global.vera = require('./vera.js')(config);
 });
 
