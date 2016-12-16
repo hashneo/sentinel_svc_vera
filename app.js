@@ -30,7 +30,7 @@ var config = {
     }
 };
 
-consul.kv.get('config/sentinel/vera', function(err, result) {
+consul.kv.get('config/sentinel/vera2', function(err, result) {
     if (err) throw err;
 
     let config = JSON.parse(result.Value);
