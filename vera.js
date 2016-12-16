@@ -31,7 +31,9 @@ function vera(config) {
     });
 
     statusCache.on( "set", function( key, value ){
-        pub.publish("sentinel.device.update",  JSON.stringify( { module: 'vera', id : key, value : value } ));
+        var data = JSON.stringify( { module: 'vera', id : key, value : value });
+        console.log( data );
+        pub.publish("sentinel.device.update",  data );
     });
 
     function call(url) {
@@ -43,7 +45,7 @@ function vera(config) {
             else
                 url = 'https://' + config.server + '/' + config.user + '/' + config.password + '/' + config.systemid + '/data_request?output_format=json&id=' + url;
 
-            var options = {
+            let options = {
                 url : url,
                 timeout : 30000,
                 agent: keepAliveAgent
@@ -141,9 +143,9 @@ function vera(config) {
     function updateStatus() {
 
         return new Promise( ( fulfill, reject ) => {
-            var url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=100&Timeout=10&LoadTime=' + lastLoadTime + '&rand=' + Math.random();
+            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=100&Timeout=10&LoadTime=' + lastLoadTime + '&rand=' + Math.random();
 
-            console.log(url);
+            //console.log(url);
 
             call(url)
                 .then((data) => {
@@ -209,6 +211,9 @@ function vera(config) {
                         }
 
                         if (d.type != undefined) {
+
+                            console.log( JSON.stringify( d ) );
+
                             devices.push(d);
                         }
 
@@ -216,6 +221,9 @@ function vera(config) {
                     }
 
                     fulfill(devices);
+
+                    console.log("System load complete.");
+
                 })
                 .catch((err) => {
                     reject(err);

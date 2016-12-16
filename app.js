@@ -21,6 +21,9 @@ var config = {
     appRoot: __dirname, // required config
     swaggerSecurityHandlers: {
         Oauth: (req, authOrSecDef, scopesOrApiKey, cb) => {
+
+            console.log ('Incoming call => ' + req.originalUrl);
+
             if (scopesOrApiKey == "open") {
                 cb();
             }else {
@@ -30,7 +33,7 @@ var config = {
     }
 };
 
-consul.kv.get('config/sentinel/vera2', function(err, result) {
+consul.kv.get('config/sentinel/vera', function(err, result) {
     if (err) throw err;
 
     let config = JSON.parse(result.Value);
