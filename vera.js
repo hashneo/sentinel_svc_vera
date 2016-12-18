@@ -20,7 +20,7 @@ function vera(config) {
 
     var request = require('request');
     var http = require('http');
-    var keepAliveAgent = new http.Agent({ keepAlive: true });
+    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 1 });
 
     var categories = require('./device_categories.json');
 
