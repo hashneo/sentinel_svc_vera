@@ -45,6 +45,10 @@ function vera(config) {
             else
                 url = 'https://' + config.server + '/' + config.user + '/' + config.password + '/' + config.systemid + '/data_request?output_format=json&id=' + url;
 
+            url += '&rand=' + Math.random();
+
+            console.log(url);
+
             let options = {
                 url : url,
                 timeout : 30000,
@@ -143,7 +147,7 @@ function vera(config) {
     function updateStatus() {
 
         return new Promise( ( fulfill, reject ) => {
-            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=100&Timeout=10&LoadTime=' + lastLoadTime + '&rand=' + Math.random();
+            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=1000&Timeout=60&LoadTime=' + lastLoadTime;
 
             //console.log(url);
 
@@ -341,19 +345,17 @@ function vera(config) {
                                 }
                             }
                         }
-
-                        //setTimeout(updateStatus, 1000);
-
+                        setTimeout(pollSystem, 1000);
                     })
                     .catch((err) => {
                         console.log("status returned error => " + err);
                         lastDataVersion = lastLoadTime = 0;
+                        setTimeout(pollSystem, 1000);
                     });
-
 
             }
 
-            setInterval(pollSystem, 500);
+            setTimeout(pollSystem, 10);
         })
         .catch((err) => {
             process.exit(1);
