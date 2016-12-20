@@ -17,7 +17,7 @@ module.exports.setLightState = (req, res) => {
 module.exports.setLightLevel = (req, res) => {
 
     let id = req.swagger.params.id.value;
-    let value = req.swagger.params.value;
+    let value = req.swagger.params.level.value;
 
     global.vera.setLoadLevelTarget(id, 'urn:upnp-org:serviceId:Dimming1', value)
         .then( (status) => {

@@ -20,7 +20,7 @@ function vera(config) {
 
     var request = require('request');
     var http = require('http');
-    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 1 });
+    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 5 });
 
     var categories = require('./device_categories.json');
 
@@ -147,7 +147,7 @@ function vera(config) {
     function updateStatus() {
 
         return new Promise( ( fulfill, reject ) => {
-            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=1000&Timeout=60&LoadTime=' + lastLoadTime;
+            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=10000&Timeout=60&LoadTime=' + lastLoadTime;
 
             //console.log(url);
 
@@ -345,7 +345,7 @@ function vera(config) {
                                 }
                             }
                         }
-                        setTimeout(pollSystem, 1000);
+                        setTimeout(pollSystem, 10);
                     })
                     .catch((err) => {
                         console.log("status returned error => " + err);

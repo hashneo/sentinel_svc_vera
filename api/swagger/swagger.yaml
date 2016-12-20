@@ -136,7 +136,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /light/{id}/level/{value}:
+  /light/{id}/level/{level}:
     x-swagger-router-controller: light
     get:
       operationId: setLightLevel
@@ -149,7 +149,7 @@ paths:
         required: true
         type: string
       - in: path
-        name: value
+        name: level
         required: true
         type: string
       responses:
