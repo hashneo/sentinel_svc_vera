@@ -9,7 +9,7 @@ function vera(config) {
 
     const redis = require('redis');
 
-    let pub = redis.createClient({ host: process.env.REDIS || '127.0.0.1' });
+    let pub = redis.createClient({ host: '10.0.1.10' });
 
     var NodeCache = require( "node-cache" );
 
@@ -33,7 +33,7 @@ function vera(config) {
     statusCache.on( "set", function( key, value ){
         var data = JSON.stringify( { module: 'vera', id : key, value : value });
         console.log( data );
-        pub.publish("sentinel.device.update",  data );
+        pub.publish("sentinel.device.update",  data);
     });
 
     function call(url) {
