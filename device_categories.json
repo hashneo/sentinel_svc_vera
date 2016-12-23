@@ -1,11 +1,21 @@
 { 
 	"1" : { "name" : "interface" 	    , "variable" : "", "subcategories" : { } }, 
-	"2" : { "name" : "light.dimmable"   , "variable" : "level", "subcategories" : { 
-																"1" : { "name" : "interior" } , 
-																"2" : { "name" : "exterior" }  
-															}  },
-	"3" : { "name" : "switch"           , "variable" : "status", "subcategories" : { }  },
-	"4" : { "name" : "sensor"  			, "variable" : "tripped"	   , "subcategories" : { 
+	"2" : { "name" : "light.dimmable"   , "variable" : "level", "subcategories" : {
+                                                                    "1" : { "name" : "bulb" },
+                                                                    "2" : { "name" : "plugged" },
+                                                                    "3" : { "name" : "in_wall" },
+                                                                    "4" : { "name" : "rgb" }
+                                                                  } },
+	"3" : { "name" : "switch"           , "variable" : "status", "subcategories" : {
+                                                                    "1" : { "name" : "interior" },
+                                                                    "2" : { "name" : "exterior" },
+                                                                    "3" : { "name" : "in_wall" },
+                                                                    "4" : { "name" : "refrigerator" },
+                                                                    "5" : { "name" : "garage_door" },
+                                                                    "6" : { "name" : "doorbell" }
+                                                                  } },
+
+	"4" : { "name" : "sensor"  			, "variable" : "tripped" , "subcategories" : {
 															   		"1" : { "name" : "door" }, 
 															   		"2" : { "name" : "leak" }, 
 															   		"3" : { "name" : "motion" },
@@ -41,7 +51,11 @@
 	"21": { "name" : "meter.power"      , "variable" : "", "subcategories" : { } },
 	"22": { "name" : "alarm.panel"      , "variable" : "", "subcategories" : { } },
 	"23": { "name" : "alarm.partition"  , "variable" : "", "subcategories" : { } },
-	"24": { "name" : "siren"			, "variable" : "", "subcategories" : { } }
+	"24": { "name" : "siren"			, "variable" : "", "subcategories" : { } },
+    "25": { "name" : "weather"			, "variable" : "", "subcategories" : { } },
+    "26": { "name" : "phillips"			, "variable" : "", "subcategories" : { } },
+    "27": { "name" : "appliance"		, "variable" : "", "subcategories" : { } },
+    "28": { "name" : "uv_sensor"		, "variable" : "", "subcategories" : { } }
 }
 
     
