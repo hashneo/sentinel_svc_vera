@@ -38,6 +38,7 @@ consul.kv.get('config/sentinel/vera', function(err, result) {
 
     let config = JSON.parse(result.Value);
 
+    global.config = config;
     global.vera = require('./vera.js')(config);
 });
 
@@ -71,16 +72,7 @@ SwaggerExpress.create(config, function (err, swaggerExpress) {
         };
 
         process.env.SERVICE_ID = serviceId;
-/*
-        consul.agent.service.register(module)
-            .then( (err, result) =>{
-                if (err)
-                    throw err;
-            })
-            .catch( (err) => {
-                throw err;
-            })
-*/
+
     });
 
     if (swaggerExpress.runner.swagger.paths['/health']) {

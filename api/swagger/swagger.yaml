@@ -136,6 +136,30 @@ paths:
         default:
           $ref: '#/responses/Error'
 
+  /light/{id}/color/{color}:
+    x-swagger-router-controller: light
+    get:
+      operationId: setLightColor
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: path
+        name: color
+        required: true
+        type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
   /light/{id}/level/{level}:
     x-swagger-router-controller: light
     get:

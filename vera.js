@@ -9,7 +9,18 @@ function vera(config) {
 
     const redis = require('redis');
 
-    let pub = redis.createClient({ host: '10.0.1.10' });
+    let pub = redis.createClient(
+        {
+            host: process.env.REDIS || global.config.redis || '127.0.0.1' ,
+            socket_keepalive: true,
+            retry_unfulfilled_commands: true
+        }
+    );
+
+    pub.on('end', function(e){
+        console.log('Redis hung up, committing suicide');
+        process.exit(1);
+    });
 
     var NodeCache = require( "node-cache" );
 
@@ -20,7 +31,7 @@ function vera(config) {
 
     var request = require('request');
     var http = require('http');
-    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 5 });
+    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 3 });
 
     var categories = require('./device_categories.json');
 
@@ -31,7 +42,7 @@ function vera(config) {
     });
 
     statusCache.on( "set", function( key, value ){
-        var data = JSON.stringify( { module: 'vera', id : key, value : value });
+        let data = JSON.stringify( { module: 'vera', id : key, value : value });
         console.log( data );
         pub.publish("sentinel.device.update",  data);
     });
@@ -130,6 +141,29 @@ function vera(config) {
 
     this.setLoadLevelTarget = (id, service, value) => {
         return this.callAction(id, service, 'SetLoadLevelTarget', 'newLoadlevelTarget', value);
+    };
+
+    this.setColorRGBW = (id, service, value) => {
+        let parts = value.split(',');
+        if ( parts.length < 3 )
+            throw "invalid parameters";
+        // If no white is specified, assume 0;
+        if ( parts.length == 3 )
+            parts.push('0');
+
+        let newRGB = parts[0] + ',' + parts[1] + ',' + parts[2];
+
+        return new Promise( (fulfill,reject)=>{
+            this.callAction(id, service, 'SetColorRGB', 'newColorRGBTarget', newRGB)
+                .then(()=>{
+                    setTimeout( () => {
+                        this.callAction(id, service, 'SetColor', 'newColorTarget', 'W' + parts[3])
+                            .then(()=>{
+                                fulfill();
+                            })
+                    }, 2000);
+                });
+        })
     };
 
     this.setModeTarget = (id, service, value) => {
