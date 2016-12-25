@@ -181,7 +181,7 @@ function vera(config) {
     function updateStatus() {
 
         return new Promise( ( fulfill, reject ) => {
-            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=10000&Timeout=60&LoadTime=' + lastLoadTime;
+            let url = 'status&DataVersion=' + lastDataVersion + '&MinimumDelay=100&Timeout=60&LoadTime=' + lastLoadTime;
 
             //console.log(url);
 
