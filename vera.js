@@ -326,6 +326,7 @@ function vera(config) {
 
                 delete data['ZWaveDevice'];
                 delete data['HaDevice'];
+                delete data['ZWaveNetwork'];
 
                 if (data['SwitchPower'] !== undefined) {
                     if (data['SwitchPower']['Target'] !== undefined)
@@ -335,6 +336,9 @@ function vera(config) {
                 }
 
                 if (data['DoorLock'] !== undefined) {
+                    delete data['SwitchPower'];
+                    delete data['DoorLock']['sl_LockButton'];
+                    delete data['DoorLock']['sl_UserCode'];
                     if (data['DoorLock']['Target'] !== undefined)
                         data['DoorLock']['Current'] = data['DoorLock']['Target'];
                     if (data['DoorLock']['Status'] !== undefined)
