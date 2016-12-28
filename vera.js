@@ -339,6 +339,11 @@ function vera(config) {
                     delete data['SwitchPower'];
                     delete data['DoorLock']['sl_LockButton'];
                     delete data['DoorLock']['sl_UserCode'];
+                    delete data['DoorLock']['MaxPinSize'];
+                    delete data['DoorLock']['MinPinSize'];
+                    delete data['DoorLock']['PinCodes'];
+                    delete data['DoorLock']['KeepPinCodes'];
+                    delete data['DoorLock']['LockArgs'];
                     if (data['DoorLock']['Target'] !== undefined)
                         data['DoorLock']['Current'] = data['DoorLock']['Target'];
                     if (data['DoorLock']['Status'] !== undefined)
