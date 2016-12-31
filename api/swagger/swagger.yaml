@@ -305,7 +305,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /alarm/{id}/arm/{mode}?code={pin}:
+  /alarm/{id}/arm/{mode}:
     x-swagger-router-controller: alarm
     get:
       operationId: setAlarmArmedMode
@@ -327,9 +327,9 @@ paths:
            night,
            vacation
         ]
-      - in: path
+      - in: query
         name: pin
-        required : true
+        required: true
         type: string
       responses:
         200:
@@ -339,7 +339,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /alarm/{id}/disarm?code={pin}:
+  /alarm/{id}/disarm:
     x-swagger-router-controller: alarm
     get:
       operationId: setAlarmDisarmed
@@ -351,7 +351,7 @@ paths:
         name: id
         required: true
         type: string
-      - in: path
+      - in: query
         name: pin
         required : true
         type: string
@@ -363,7 +363,7 @@ paths:
         default:
           $ref: '#/responses/Error'
 
-  /alarm/{id}/chime/{state}?code={pin}:
+  /alarm/{id}/chime/{state}:
     x-swagger-router-controller: alarm
     get:
       operationId: setAlarmChimeState
@@ -380,9 +380,9 @@ paths:
         required: true
         type: string
         enum: [ on, off, toggle ]
-      - in: path
+      - in: query
         name: pin
-        required : true
+        required: true
         type: string
       responses:
         200:

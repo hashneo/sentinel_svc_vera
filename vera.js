@@ -22,21 +22,23 @@ function vera(config) {
         process.exit(1);
     });
 
-    var NodeCache = require( "node-cache" );
+    const NodeCache = require( "node-cache" );
 
-    var deviceCache = new NodeCache();
-    var statusCache = new NodeCache();
+    const deviceCache = new NodeCache();
+    const statusCache = new NodeCache();
 
-    var merge = require('deepmerge');
+    const merge = require('deepmerge');
 
-    var request = require('request');
-    var http = require('http');
-    var keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 3 });
+    const request = require('request');
+    const http = require('http');
+    const keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 3 });
 
-    var categories = require('./device_categories.json');
+    const categories = require('./device_categories.json');
 
-    var lastDataVersion = 0;
-    var lastLoadTime = 0;
+    const that = this;
+
+    let lastDataVersion = 0;
+    let lastLoadTime = 0;
 
     deviceCache.on( "set", function( key, value ){
     });
@@ -124,7 +126,10 @@ function vera(config) {
     };
 
     this.callAction = (id, service, action, variable, value, extraParameters) => {
-        var url = 'action&action=' + action + '&serviceId=' + service + '&DeviceNum=' + id + '&' + variable + '=' + value;
+        let url = 'action&action=' + action + '&serviceId=' + service + '&DeviceNum=' + id;
+
+        if ( variable )
+            url += '&' + variable + '=' + value;
 
         if (extraParameters != undefined) {
             Object.keys(extraParameters).forEach(function (key) {
@@ -177,6 +182,10 @@ function vera(config) {
     this.setMode = (id, service, value) => {
         return this.callAction(id, service, 'SetMode', 'NewMode', value);
     };
+
+    this.pollDevice = (id) =>{
+        return this.callAction(id, 'urn:micasaverde-com:serviceId:HaDevice1', 'Poll');
+    }
 
     function updateStatus() {
 
@@ -365,19 +374,20 @@ function vera(config) {
                 updateStatus()
                     .then((status) => {
 
-                        for (var i in status.devices) {
-                            var device = status.devices[i];
+                        for (let i in status.devices) {
 
-                            var d = deviceCache.get(device.id);
+                            let device = status.devices[i];
+
+                            let d = deviceCache.get(device.id);
 
                             if (d !== undefined) {
-                                var current = statusCache.get(device.id);
+                                let current = statusCache.get(device.id);
 
-                                var update = processStates(device['states']);
+                                let update = processStates(device['states']);
 
                                 if (update) {
                                     if (current !== undefined) {
-                                        var newVal = merge(current, update);
+                                        let newVal = merge(current, update);
 
                                         if (JSON.stringify(current) !== JSON.stringify(newVal)) {
                                             statusCache.set(device.id, newVal);
@@ -399,6 +409,30 @@ function vera(config) {
             }
 
             setTimeout(pollSystem, 10);
+/*
+            function pollDevices() {
+
+                deviceCache.keys( ( err, ids ) => {
+                    if (!err){
+                        for (let i in ids) {
+                            that.pollDevice(ids[i])
+                                .then( ()=>{
+
+                                })
+                                .catch( (err)=>{
+
+                                });
+                        }
+                    }
+
+                    // Re-run every hour
+                    setTimeout(pollDevices, (60 * 60) * 1000);
+                });
+
+            }
+
+            setTimeout(pollDevices, 10);
+*/
         })
         .catch((err) => {
             process.exit(1);
