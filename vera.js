@@ -183,9 +183,9 @@ function vera(config) {
         return this.callAction(id, service, 'SetMode', 'NewMode', value);
     };
 
-    this.pollDevice = (id) =>{
+    this.pollDevice = (id) => {
         return this.callAction(id, 'urn:micasaverde-com:serviceId:HaDevice1', 'Poll');
-    }
+    };
 
     function updateStatus() {
 
@@ -205,7 +205,7 @@ function vera(config) {
                     fulfill(data);
                 });
         });
-    };
+    }
 
     function loadSystem() {
 
@@ -258,9 +258,7 @@ function vera(config) {
                         }
 
                         if (d.type != undefined) {
-
                             console.log( JSON.stringify( d ) );
-
                             devices.push(d);
                         }
 

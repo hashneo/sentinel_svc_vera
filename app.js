@@ -42,6 +42,11 @@ consul.kv.get('config/sentinel/vera', function(err, result) {
     global.vera = require('./vera.js')(config);
 });
 
+process.on('unhandledRejection', (reason, p) => {
+    console.log('Unhandled Rejection at: Promise', p, 'reason:', reason);
+    process.exit(1);
+});
+
 
 SwaggerExpress.create(config, function (err, swaggerExpress) {
     if (err) {
