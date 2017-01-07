@@ -73,12 +73,12 @@ function vera(config) {
                     if (!err && body.indexOf("ERROR:") != 0 && response.statusCode == 200) {
                         fulfill(JSON.parse(body));
                     } else {
-                        console.log("request failed => " + err);
+                        console.error(err);
                         reject(err);
                     }
                 });
             }catch(e){
-                console.log("request error => " + e);
+                console.error(err);
                 reject(e);
             }
         } );
@@ -166,8 +166,14 @@ function vera(config) {
                             .then(()=>{
                                 fulfill();
                             })
+                            .catch((err) => {
+                                reject(err);
+                            })
                     }, 2000);
-                });
+                })
+                .catch((err) => {
+                    reject(err);
+                })
         })
     };
 
@@ -203,7 +209,10 @@ function vera(config) {
                     if (lastLoadTime == 0)
                         lastLoadTime = data.LoadTime;
                     fulfill(data);
-                });
+                })
+                .catch((err) => {
+                    reject(err);
+                })
         });
     }
 
@@ -274,7 +283,7 @@ function vera(config) {
                     reject(err);
                 })
         });
-    };
+    }
 
     loadSystem()
 
@@ -399,7 +408,7 @@ function vera(config) {
                         setTimeout(pollSystem, 10);
                     })
                     .catch((err) => {
-                        console.log("status returned error => " + err);
+                        console.error(err);
                         lastDataVersion = lastLoadTime = 0;
                         setTimeout(pollSystem, 1000);
                     });
@@ -433,6 +442,7 @@ function vera(config) {
 */
         })
         .catch((err) => {
+            console.error(err);
             process.exit(1);
         });
 
