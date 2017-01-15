@@ -95,17 +95,27 @@ function vera(config) {
                     if (err)
                         return reject(err);
 
-                    var data = [];
+                    statusCache.mget( ids, (err, statuses) => {
+                        if (err)
+                            return reject(err);
 
-                    for (var key in values) {
-                        data.push(values[key]);
-                    }
+                        let data = [];
 
-                    fulfill(data);
+                        for (let key in values) {
+                            let v = values[key];
+
+                            if ( statuses[key] ) {
+                                v.current = statuses[key];
+                                data.push(v);
+                            }
+                        }
+
+                        fulfill(data);
+                    });
+
                 });
             });
         });
-
     };
 
     this.getDeviceStatus = (id) => {
@@ -295,11 +305,19 @@ function vera(config) {
                 if (states === undefined)
                     return null;
 
+                var _mapper = require('./upnp/map.js');
+
                 for (var i in states) {
                     var state = states[i];
                     var service = state['service'];
                     var variable = state['variable'];
-                    var value = state['value']
+                    var value = state['value'];
+
+                    if (!_mapper[service])
+                        continue;
+
+                    data = _mapper[service].process( data, state );
+/*
                     if (variable !== undefined) {
 
                         var serviceData;
@@ -338,8 +356,10 @@ function vera(config) {
                             serviceData[variable] = value;
                         }
                     }
+*/
                 }
-
+/*
+                console.log('Service => ' + service);
                 delete data['ZWaveDevice'];
                 delete data['HaDevice'];
                 delete data['ZWaveNetwork'];
@@ -352,6 +372,7 @@ function vera(config) {
                 }
 
                 if (data['DoorLock'] !== undefined) {
+                    delete data['MyQGateway'];
                     delete data['SwitchPower'];
                     delete data['DoorLock']['sl_LockButton'];
                     delete data['DoorLock']['sl_UserCode'];
@@ -373,6 +394,7 @@ function vera(config) {
                         data['Dimming']['Current'] = data['Dimming']['LoadLevelStatus'];
 
                 }
+*/
                 return data;
             }
 
