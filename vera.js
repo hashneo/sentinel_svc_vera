@@ -35,6 +35,8 @@ function vera(config) {
 
     const categories = require('./device_categories.json');
 
+    const mapper = require('./upnp/map.js');
+
     const that = this;
 
     let lastDataVersion = 0;
@@ -147,7 +149,19 @@ function vera(config) {
             });
         }
 
-        return call(url);
+        return new Promise( ( fulfill, reject ) => {
+            call(url)
+                .then( (data) =>{
+                    if ( data['u:SetTargetResponse'] && data['u:SetTargetResponse']['JobID'] ){
+                        fulfill('accepted');
+                    }else{
+                        reject('failed');
+                    }
+                })
+                .catch( (err) =>{
+                    reject(err);
+                });
+        });
     };
 
     this.setTarget = (id, service, value) => {
@@ -240,32 +254,32 @@ function vera(config) {
                         reject('no data returned');
                     }
 
-                    var devices = [];
+                    let devices = [];
 
-                    for (var i in status.devices) {
-                        var device = status.devices[i];
+                    for (let i in status.devices) {
+                        let device = status.devices[i];
 
-                        var d = {'id': device.id};
+                        let d = {'id': device.id};
 
                         d['name'] = device['name'];
 
-                        var room = status.rooms.find(function (r) {
+                        let room = status.rooms.find(function (r) {
                             return r.id == device.room
                         });
 
                         if (room !== undefined) {
-                            var section = status.sections.find(function (r) {
-                                return r.id == room.section
+                            let section = status.sections.find(function (r) {
+                                return r.id == room.section;
                             });
                             d['where'] = {'location': section.name, 'room': room.name};
                         }
 
-                        var type = categories[device.category];
+                        let type = categories[device.category];
 
                         if (type !== undefined) {
                             d['type'] = type.name;
 
-                            var subcategory = type.subcategories[device.subcategory];
+                            let subcategory = type.subcategories[device.subcategory];
 
                             if (subcategory !== undefined) {
                                 d['type'] = d['type'] + '.' + subcategory.name;
@@ -300,101 +314,21 @@ function vera(config) {
         .then( () => {
 
             function processStates(states) {
-                var data = {};
+                let data = {};
 
                 if (states === undefined)
                     return null;
 
-                var _mapper = require('./upnp/map.js');
+                states.forEach( (state) => {
+                    let service = state['service'];
+                    //let variable = state['variable'];
+                    //let value = state['value'];
 
-                for (var i in states) {
-                    var state = states[i];
-                    var service = state['service'];
-                    var variable = state['variable'];
-                    var value = state['value'];
-
-                    if (!_mapper[service])
-                        continue;
-
-                    data = _mapper[service].process( data, state );
-/*
-                    if (variable !== undefined) {
-
-                        var serviceData;
-                        var match;
-                        if (( match = /urn:[a-zA-Z0-9\-]+:serviceId:(\w+)(\d+)(?:_(\w+))?/g.exec(service) ) != null) {
-
-                            var serviceName = match[1];
-                            var serviceInstance = match[2];
-                            var serviceMode = match[3];
-
-                            if (data[serviceName] == undefined) {
-                                data[serviceName] = {};
-                            }
-
-                            serviceData = data[serviceName];
-
-                            if (serviceMode !== undefined) {
-                                if (serviceData[serviceMode] == undefined) {
-                                    serviceData[serviceMode] = {};
-                                }
-
-                                serviceData = serviceData[serviceMode];
-                            }
-
-                            if (serviceInstance > 1) {
-                                if (serviceData[serviceInstance] == undefined) {
-                                    serviceData[serviceInstance] = {};
-                                }
-
-                                serviceData = serviceData[serviceInstance];
-                            }
-
-                            if (variable.toLowerCase() === 'password')
-                                value = '********';
-
-                            serviceData[variable] = value;
-                        }
+                    if (mapper[service]) {
+                        data = mapper[service].process(data, state);
                     }
-*/
-                }
-/*
-                console.log('Service => ' + service);
-                delete data['ZWaveDevice'];
-                delete data['HaDevice'];
-                delete data['ZWaveNetwork'];
+                });
 
-                if (data['SwitchPower'] !== undefined) {
-                    if (data['SwitchPower']['Target'] !== undefined)
-                        data['SwitchPower']['Current'] = data['SwitchPower']['Target'];
-                    if (data['SwitchPower']['Status'] !== undefined)
-                        data['SwitchPower']['Current'] = data['SwitchPower']['Status'];
-                }
-
-                if (data['DoorLock'] !== undefined) {
-                    delete data['MyQGateway'];
-                    delete data['SwitchPower'];
-                    delete data['DoorLock']['sl_LockButton'];
-                    delete data['DoorLock']['sl_UserCode'];
-                    delete data['DoorLock']['MaxPinSize'];
-                    delete data['DoorLock']['MinPinSize'];
-                    delete data['DoorLock']['PinCodes'];
-                    delete data['DoorLock']['KeepPinCodes'];
-                    delete data['DoorLock']['LockArgs'];
-                    if (data['DoorLock']['Target'] !== undefined)
-                        data['DoorLock']['Current'] = data['DoorLock']['Target'];
-                    if (data['DoorLock']['Status'] !== undefined)
-                        data['DoorLock']['Current'] = data['DoorLock']['Status'];
-                }
-
-                if (data['Dimming'] !== undefined) {
-                    if (data['Dimming']['LoadLevelTarget'] !== undefined)
-                        data['Dimming']['Current'] = data['Dimming']['LoadLevelTarget'];
-                    if (data['Dimming']['LoadLevelStatus'] !== undefined)
-                        data['Dimming']['Current'] = data['Dimming']['LoadLevelStatus'];
-
-                }
-*/
                 return data;
             }
 
