@@ -1,6 +1,13 @@
 'use strict';
 require('array.prototype.find');
 
+String.prototype.zpad = function(length) {
+    let str = this;
+    while (str.length < length)
+        str = '0' + str;
+    return str;
+};
+
 function vera(config) {
 
     if ( !(this instanceof vera) ){
@@ -75,8 +82,8 @@ function vera(config) {
                     if (!err && body.indexOf("ERROR:") != 0 && response.statusCode == 200) {
                         fulfill(JSON.parse(body));
                     } else {
-                        console.error(err);
-                        reject(err);
+                        console.error(err||body);
+                        reject(err||body);
                     }
                 });
             }catch(e){
@@ -152,7 +159,7 @@ function vera(config) {
         return new Promise( ( fulfill, reject ) => {
             call(url)
                 .then( (data) =>{
-                    if ( data['u:SetTargetResponse'] && data['u:SetTargetResponse']['JobID'] ){
+                    if ( data['u:' + action + 'Response'] && data['u:' + action + 'Response']['JobID'] ){
                         fulfill('accepted');
                     }else{
                         reject('failed');
@@ -172,16 +179,47 @@ function vera(config) {
         return this.callAction(id, service, 'SetLoadLevelTarget', 'newLoadlevelTarget', value);
     };
 
-    this.setColorRGBW = (id, service, value) => {
-        let parts = value.split(',');
-        if ( parts.length < 3 )
-            throw "invalid parameters";
-        // If no white is specified, assume 0;
-        if ( parts.length == 3 )
-            parts.push('0');
+    this.startAnimation = (id, service, program) => {
+        return this.callAction(id, service, 'StartAnimationProgram', 'programName', program);
+    };
 
-        let newRGB = parts[0] + ',' + parts[1] + ',' + parts[2];
+    this.stopAnimation = ( id, service  ) => {
+        return this.callAction(id, service, 'StopAnimationProgram');
+    };
 
+    this.setColor = (id, service, value) => {
+
+        let p = [];
+
+        let v = value.r.toString(16).zpad(2) + value.g.toString(16).zpad(2) + value.b.toString(16).zpad(2) + value.w.toString(16).zpad(2) + '00';
+
+        return this.callAction(id, service, 'SetColorTarget', 'newColorTargetValue', v);
+/*
+        for( let k in value ){
+            if ( value[k] !== undefined ){
+                p.push ( new Promise( ( fulfill, reject ) => {
+                    this.callAction(id, service, 'SetColor', 'newColorTarget', k.toUpperCase() + value[k] )
+                        .then( () => {
+                            setTimeout( ()=> { fulfill() }, 2000 );
+                        })
+                        .catch( (err) => {
+                            reject(err)
+                        })
+                }));
+            }
+        }
+
+        return new Promise(  (fulfill, reject) => {
+            Promise.all(p)
+                .then( () =>{
+                    fulfill('accepted');
+                })
+                .catch( (err) => {
+                    reject(err);
+                })
+        });
+*/
+        /*
         return new Promise( (fulfill,reject)=>{
             this.callAction(id, service, 'SetColorRGB', 'newColorRGBTarget', newRGB)
                 .then(()=>{
@@ -199,6 +237,7 @@ function vera(config) {
                     reject(err);
                 })
         })
+        */
     };
 
     this.setModeTarget = (id, service, value) => {
@@ -290,6 +329,11 @@ function vera(config) {
                             }
                         }
 
+                        if ( global.config.types ){
+                            if ( global.config.types[d.id] ) {
+                                d.type = global.config.types[d.id];
+                            }
+                        }
                         if (d.type != undefined) {
                             console.log( JSON.stringify( d ) );
                             devices.push(d);

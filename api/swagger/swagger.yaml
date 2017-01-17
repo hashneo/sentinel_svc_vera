@@ -108,6 +108,98 @@ paths:
         default:
           $ref: '#/responses/Error'
 
+  /light/{id}/rgb/color:
+    x-swagger-router-controller: rgb
+    get:
+      operationId: setLightColor
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: query
+        name: r
+        required: false
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 255
+      - in: query
+        name: g
+        required: false
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 255
+      - in: query
+        name: b
+        required: false
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 255
+      - in: query
+        name: w
+        required: false
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 255
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
+  /light/{id}/rgb/animation/run:
+    x-swagger-router-controller: rgb
+    get:
+      operationId: runAnimation
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: query
+        name: program
+        required: true
+        type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
+  /light/{id}/rgb/animation/stop:
+    x-swagger-router-controller: rgb
+    get:
+      operationId: stopAnimation
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
   /light/{id}/{state}:
     x-swagger-router-controller: light
     get:
@@ -128,30 +220,6 @@ paths:
           on,
           off
         ]
-      responses:
-        200:
-          description: ok
-          schema:
-            type: object
-        default:
-          $ref: '#/responses/Error'
-
-  /light/{id}/color/{color}:
-    x-swagger-router-controller: light
-    get:
-      operationId: setLightColor
-      security:
-      - Oauth:
-        - user
-      parameters:
-      - in: path
-        name: id
-        required: true
-        type: string
-      - in: path
-        name: color
-        required: true
-        type: string
       responses:
         200:
           description: ok

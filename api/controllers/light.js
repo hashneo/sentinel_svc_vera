@@ -27,17 +27,3 @@ module.exports.setLightLevel = (req, res) => {
             res.status(500).json( { code: err.code || 0, message: err.message } );
         });
 };
-
-module.exports.setLightColor = (req, res) => {
-
-    let id = req.swagger.params.id.value;
-    let value = req.swagger.params.color.value;
-
-    global.vera.setColorRGBW(id, 'urn:micasaverde-com:serviceId:Color1', value)
-        .then( (status) => {
-            res.json( { data: { status: status }, result : 'ok' } );
-        })
-        .catch( (err) => {
-            res.status(500).json( { code: err.code || 0, message: err.message } );
-        });
-};
