@@ -73,7 +73,7 @@ function vera(config) {
 
             let options = {
                 url : url,
-                timeout : 30000,
+                timeout : 90000,
                 agent: keepAliveAgent
             };
 
