@@ -3,7 +3,7 @@
 module.exports.process = (_data, _state) => {
 
     if (!_data['tripped'])
-        _data['tripped'] = {};
+        _data['tripped'] = {'current' : false};
 
     switch (_state.variable) {
         case  'Armed':
