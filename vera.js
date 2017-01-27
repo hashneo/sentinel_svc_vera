@@ -194,50 +194,50 @@ function vera(config) {
         let v = value.r.toString(16).zpad(2) + value.g.toString(16).zpad(2) + value.b.toString(16).zpad(2) + value.w.toString(16).zpad(2) + '00';
 
         return this.callAction(id, service, 'SetColorTarget', 'newColorTargetValue', v);
-/*
-        for( let k in value ){
-            if ( value[k] !== undefined ){
-                p.push ( new Promise( ( fulfill, reject ) => {
-                    this.callAction(id, service, 'SetColor', 'newColorTarget', k.toUpperCase() + value[k] )
-                        .then( () => {
-                            setTimeout( ()=> { fulfill() }, 2000 );
-                        })
-                        .catch( (err) => {
-                            reject(err)
-                        })
-                }));
-            }
-        }
-
-        return new Promise(  (fulfill, reject) => {
-            Promise.all(p)
-                .then( () =>{
-                    fulfill('accepted');
-                })
-                .catch( (err) => {
-                    reject(err);
-                })
-        });
-*/
         /*
-        return new Promise( (fulfill,reject)=>{
-            this.callAction(id, service, 'SetColorRGB', 'newColorRGBTarget', newRGB)
-                .then(()=>{
-                    setTimeout( () => {
-                        this.callAction(id, service, 'SetColor', 'newColorTarget', 'W' + parts[3])
-                            .then(()=>{
-                                fulfill();
-                            })
-                            .catch((err) => {
-                                reject(err);
-                            })
-                    }, 2000);
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-        })
-        */
+         for( let k in value ){
+         if ( value[k] !== undefined ){
+         p.push ( new Promise( ( fulfill, reject ) => {
+         this.callAction(id, service, 'SetColor', 'newColorTarget', k.toUpperCase() + value[k] )
+         .then( () => {
+         setTimeout( ()=> { fulfill() }, 2000 );
+         })
+         .catch( (err) => {
+         reject(err)
+         })
+         }));
+         }
+         }
+
+         return new Promise(  (fulfill, reject) => {
+         Promise.all(p)
+         .then( () =>{
+         fulfill('accepted');
+         })
+         .catch( (err) => {
+         reject(err);
+         })
+         });
+         */
+        /*
+         return new Promise( (fulfill,reject)=>{
+         this.callAction(id, service, 'SetColorRGB', 'newColorRGBTarget', newRGB)
+         .then(()=>{
+         setTimeout( () => {
+         this.callAction(id, service, 'SetColor', 'newColorTarget', 'W' + parts[3])
+         .then(()=>{
+         fulfill();
+         })
+         .catch((err) => {
+         reject(err);
+         })
+         }, 2000);
+         })
+         .catch((err) => {
+         reject(err);
+         })
+         })
+         */
     };
 
     this.setModeTarget = (id, service, value) => {
@@ -279,81 +279,11 @@ function vera(config) {
         });
     }
 
-    var timerId = 0;
-
-
-
-    function processStates(states) {
-        let data = {};
-
-        if (states === undefined)
-            return null;
-
-        states.forEach( (state) => {
-            let service = state['service'];
-            //let variable = state['variable'];
-            //let value = state['value'];
-
-            if (mapper[service]) {
-                data = mapper[service].process(data, state);
-            }
-        });
-
-        return data;
-    }
-
-    function pollSystem() {
-
-        updateStatus()
-            .then((status) => {
-
-                for (let i in status.devices) {
-
-                    let device = status.devices[i];
-
-                    let d = deviceCache.get(device.id);
-
-                    if (d !== undefined) {
-                        let current = statusCache.get(device.id);
-
-                        let update = processStates(device['states']);
-
-                        if (update) {
-                            if (current !== undefined) {
-                                let newVal = merge(current, update);
-
-                                if (JSON.stringify(current) !== JSON.stringify(newVal)) {
-                                    statusCache.set(device.id, newVal);
-                                }
-                            } else {
-                                statusCache.set(device.id, update);
-                            }
-                        }
-                    }
-                }
-                timerId = setTimeout(pollSystem, 10);
-            })
-            .catch((err) => {
-                console.error(err);
-                lastDataVersion = lastLoadTime = 0;
-                timerId = setTimeout(pollSystem, 1000);
-            });
-
-    }
-
     function loadSystem() {
 
+        console.log("Loading System..");
+
         return new Promise( (fulfill, reject) => {
-
-            console.log("Loading System..");
-
-            if ( timerId ) {
-                clearTimeout(timerId);
-                timerId = 0;
-            }
-
-            deviceCache.flushAll();
-            statusCache.flushAll();
 
             call('sdata')
 
@@ -414,49 +344,108 @@ function vera(config) {
 
                     fulfill(devices);
 
-                    timerId = setTimeout(pollSystem, 10);
-
-                    lastDataVersion = lastLoadTime = 0;
                     console.log("System load complete.");
 
                 })
                 .catch((err) => {
                     reject(err);
-                    process.exit(1);
                 })
         });
     }
 
     this.Reload = () => {
-        return loadSystem();
+        return new Promise( (fulfill,reject) => {
+            fulfill([]);
+        });
     };
 
     loadSystem()
+
         .then( () => {
-/*
-            function pollDevices() {
 
-                deviceCache.keys( ( err, ids ) => {
-                    if (!err){
-                        for (let i in ids) {
-                            that.pollDevice(ids[i])
-                                .then( ()=>{
+            function processStates(states) {
+                let data = {};
 
-                                })
-                                .catch( (err)=>{
+                if (states === undefined)
+                    return null;
 
-                                });
-                        }
+                states.forEach( (state) => {
+                    let service = state['service'];
+                    //let variable = state['variable'];
+                    //let value = state['value'];
+
+                    if (mapper[service]) {
+                        data = mapper[service].process(data, state);
                     }
-
-                    // Re-run every hour
-                    setTimeout(pollDevices, (60 * 60) * 1000);
                 });
+
+                return data;
+            }
+
+            function pollSystem() {
+
+                updateStatus()
+                    .then((status) => {
+
+                        for (let i in status.devices) {
+
+                            let device = status.devices[i];
+
+                            let d = deviceCache.get(device.id);
+
+                            if (d !== undefined) {
+                                let current = statusCache.get(device.id);
+
+                                let update = processStates(device['states']);
+
+                                if (update) {
+                                    if (current !== undefined) {
+                                        let newVal = merge(current, update);
+
+                                        if (JSON.stringify(current) !== JSON.stringify(newVal)) {
+                                            statusCache.set(device.id, newVal);
+                                        }
+                                    } else {
+                                        statusCache.set(device.id, update);
+                                    }
+                                }
+                            }
+                        }
+                        setTimeout(pollSystem, 10);
+                    })
+                    .catch((err) => {
+                        console.error(err);
+                        lastDataVersion = lastLoadTime = 0;
+                        setTimeout(pollSystem, 1000);
+                    });
 
             }
 
-            setTimeout(pollDevices, 10);
-*/
+            setTimeout(pollSystem, 10);
+            /*
+             function pollDevices() {
+
+             deviceCache.keys( ( err, ids ) => {
+             if (!err){
+             for (let i in ids) {
+             that.pollDevice(ids[i])
+             .then( ()=>{
+
+             })
+             .catch( (err)=>{
+
+             });
+             }
+             }
+
+             // Re-run every hour
+             setTimeout(pollDevices, (60 * 60) * 1000);
+             });
+
+             }
+
+             setTimeout(pollDevices, 10);
+             */
         })
         .catch((err) => {
             console.error(err);
@@ -466,4 +455,3 @@ function vera(config) {
 }
 
 module.exports = vera;
-
