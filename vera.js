@@ -279,11 +279,81 @@ function vera(config) {
         });
     }
 
+    var timerId = 0;
+
+
+
+    function processStates(states) {
+        let data = {};
+
+        if (states === undefined)
+            return null;
+
+        states.forEach( (state) => {
+            let service = state['service'];
+            //let variable = state['variable'];
+            //let value = state['value'];
+
+            if (mapper[service]) {
+                data = mapper[service].process(data, state);
+            }
+        });
+
+        return data;
+    }
+
+    function pollSystem() {
+
+        updateStatus()
+            .then((status) => {
+
+                for (let i in status.devices) {
+
+                    let device = status.devices[i];
+
+                    let d = deviceCache.get(device.id);
+
+                    if (d !== undefined) {
+                        let current = statusCache.get(device.id);
+
+                        let update = processStates(device['states']);
+
+                        if (update) {
+                            if (current !== undefined) {
+                                let newVal = merge(current, update);
+
+                                if (JSON.stringify(current) !== JSON.stringify(newVal)) {
+                                    statusCache.set(device.id, newVal);
+                                }
+                            } else {
+                                statusCache.set(device.id, update);
+                            }
+                        }
+                    }
+                }
+                timerId = setTimeout(pollSystem, 10);
+            })
+            .catch((err) => {
+                console.error(err);
+                lastDataVersion = lastLoadTime = 0;
+                timerId = setTimeout(pollSystem, 1000);
+            });
+
+    }
+
     function loadSystem() {
 
-        console.log("Loading System..");
-
         return new Promise( (fulfill, reject) => {
+
+            console.log("Loading System..");
+
+            if ( timerId ) {
+                clearTimeout(timerId);
+                timerId = 0;
+            }
+
+            deviceCache.flushAll();
+            statusCache.flushAll();
 
             call('sdata')
 
@@ -344,78 +414,25 @@ function vera(config) {
 
                     fulfill(devices);
 
+                    timerId = setTimeout(pollSystem, 10);
+
+                    lastDataVersion = lastLoadTime = 0;
                     console.log("System load complete.");
 
                 })
                 .catch((err) => {
                     reject(err);
+                    process.exit(1);
                 })
         });
     }
 
+    this.Reload = () => {
+        return loadSystem();
+    };
+
     loadSystem()
-
         .then( () => {
-
-            function processStates(states) {
-                let data = {};
-
-                if (states === undefined)
-                    return null;
-
-                states.forEach( (state) => {
-                    let service = state['service'];
-                    //let variable = state['variable'];
-                    //let value = state['value'];
-
-                    if (mapper[service]) {
-                        data = mapper[service].process(data, state);
-                    }
-                });
-
-                return data;
-            }
-
-            function pollSystem() {
-
-                updateStatus()
-                    .then((status) => {
-
-                        for (let i in status.devices) {
-
-                            let device = status.devices[i];
-
-                            let d = deviceCache.get(device.id);
-
-                            if (d !== undefined) {
-                                let current = statusCache.get(device.id);
-
-                                let update = processStates(device['states']);
-
-                                if (update) {
-                                    if (current !== undefined) {
-                                        let newVal = merge(current, update);
-
-                                        if (JSON.stringify(current) !== JSON.stringify(newVal)) {
-                                            statusCache.set(device.id, newVal);
-                                        }
-                                    } else {
-                                        statusCache.set(device.id, update);
-                                    }
-                                }
-                            }
-                        }
-                        setTimeout(pollSystem, 10);
-                    })
-                    .catch((err) => {
-                        console.error(err);
-                        lastDataVersion = lastLoadTime = 0;
-                        setTimeout(pollSystem, 1000);
-                    });
-
-            }
-
-            setTimeout(pollSystem, 10);
 /*
             function pollDevices() {
 
