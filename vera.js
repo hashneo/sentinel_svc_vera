@@ -14,6 +14,10 @@ function vera(config) {
         return new vera(config);
     }
 
+    const YAML = require('yamljs');
+
+    //let kubeConfig = YAML.load( __dirname + '/kube.yml');
+
     const redis = require('redis');
 
     let pub = redis.createClient(
@@ -23,6 +27,11 @@ function vera(config) {
             retry_unfulfilled_commands: true
         }
     );
+
+    pub.on('ready', function(e){
+        let data = JSON.stringify( { module: 'vera', service: { name: 'sentinel-vera', port: 5050 } });
+        pub.publish( 'sentinel.plugin.start', data);
+    });
 
     pub.on('end', function(e){
         console.log('Redis hung up, committing suicide');
@@ -49,13 +58,22 @@ function vera(config) {
     let lastDataVersion = 0;
     let lastLoadTime = 0;
 
-    deviceCache.on( "set", function( key, value ){
+    deviceCache.on( 'set', function( key, value ){
+        let data = JSON.stringify( { module: 'vera', id : key, value : value });
+        console.log( 'sentinel.device.insert => ' + data );
+        pub.publish( 'sentinel.device.insert', data);
     });
 
-    statusCache.on( "set", function( key, value ){
+    deviceCache.on( 'delete', function( key ){
+        let data = JSON.stringify( { module: 'vera', id : key });
+        console.log( 'sentinel.device.delete => ' + data );
+        pub.publish( 'sentinel.device.delete', data);
+    });
+
+    statusCache.on( 'set', function( key, value ){
         let data = JSON.stringify( { module: 'vera', id : key, value : value });
-        console.log( data );
-        pub.publish("sentinel.device.update",  data);
+        console.log( 'sentinel.device.update => ' + data );
+        pub.publish( 'sentinel.device.update', data);
     });
 
     function call(url) {
