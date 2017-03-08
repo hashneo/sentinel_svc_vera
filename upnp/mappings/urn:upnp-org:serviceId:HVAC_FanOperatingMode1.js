@@ -9,13 +9,13 @@ module.exports.process = (_data, _state) => {
         case 'Mode':
             switch(_state.value){
                 case 'Auto':
-                    _data['fan']['mode'] = 'off';
+                    _data['fan']['mode'] = 'auto';
                     break;
                 case 'ContinuousOn':
-                    _data['fan']['mode'] = 'heating';
+                    _data['fan']['mode'] = 'continuous';
                     break;
                 case 'PeriodicOn':
-                    _data['fan']['mode'] = 'cooling';
+                    _data['fan']['mode'] = 'periodic';
                     break;
             }
             break;

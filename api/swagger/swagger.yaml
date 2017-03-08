@@ -300,7 +300,8 @@ paths:
           heat,
           cool,
           auto,
-          fan,
+          away,
+          home,
           off
         ]
       responses:
