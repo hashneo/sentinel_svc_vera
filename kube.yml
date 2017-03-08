@@ -30,7 +30,7 @@ spec:
       containers:
         -
           name: sentinel-vera
-          image: docker.steventaylor.me/sentinel-vera-arm:latest
+          image: docker.steventaylor.me/sentinel-vera-x86_64:latest
           imagePullPolicy: IfNotPresent
           env:
             -
