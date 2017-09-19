@@ -6,6 +6,7 @@ services:
 variables:
   DOCKER_DRIVER: overlay
   CI_DEBUG_TRACE: "true"
+  BUILD_ARCH: "x86_64"
 
 before_script:
   - docker info
@@ -13,6 +14,6 @@ before_script:
 build_image:
   script:
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN docker.steventaylor.me
-    - docker build -t $CI_REGISTRY_IMAGE:0.0.$CI_BUILD_ID .
+    - docker build -t $CI_REGISTRY_IMAGE:0.0.$CI_BUILD_ID -f Dockerfile.$BUILD_ARCH .
     - docker push $CI_REGISTRY_IMAGE:0.0.$CI_BUILD_ID
 
