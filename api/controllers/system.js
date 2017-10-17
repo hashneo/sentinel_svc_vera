@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports.getDevices = (req, res) => {
-    global.vera.getDevices()
+    global.module.getDevices()
         .then( (devices) => {
             res.json( { data: devices, result : 'ok'  } );
         })
@@ -11,7 +11,7 @@ module.exports.getDevices = (req, res) => {
 };
 
 module.exports.Reload = (req, res) => {
-    global.vera.Reload()
+    global.module.Reload()
         .then( () => {
             res.json( { data: {}, result : 'ok'  } );
         })
@@ -21,7 +21,7 @@ module.exports.Reload = (req, res) => {
 };
 
 module.exports.getDeviceStatus = (req, res) => {
-    global.vera.getDeviceStatus(req.swagger.params.id.value)
+    global.module.getDeviceStatus(req.swagger.params.id.value)
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
@@ -31,7 +31,7 @@ module.exports.getDeviceStatus = (req, res) => {
 };
 
 module.exports.pollDevice = (req, res) => {
-    global.vera.pollDevice(req.swagger.params.id.value)
+    global.module.pollDevice(req.swagger.params.id.value)
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
