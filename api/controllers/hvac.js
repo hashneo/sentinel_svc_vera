@@ -19,7 +19,7 @@ module.exports.setHvacMode = (req, res) => {
             mode = 'Off';
             break;
     }
-    global.vera.setModeTarget(id, 'urn:upnp-org:serviceId:HVAC_UserOperatingMode1', mode )
+    global.module.setModeTarget(id, 'urn:upnp-org:serviceId:HVAC_UserOperatingMode1', mode )
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
@@ -38,10 +38,10 @@ module.exports.setHvacTemp = (req, res) => {
 
     switch (mode){
         case 'heat':
-            setCurrentSetpoint = global.vera.setCurrentSetpoint(id, 'urn:upnp-org:serviceId:TemperatureSetpoint1_Heat', temp);
+            setCurrentSetpoint = global.module.setCurrentSetpoint(id, 'urn:upnp-org:serviceId:TemperatureSetpoint1_Heat', temp);
             break;
         case 'cool':
-            setCurrentSetpoint = global.vera.setCurrentSetpoint(id, 'urn:upnp-org:serviceId:TemperatureSetpoint1_Cool', temp);
+            setCurrentSetpoint = global.module.setCurrentSetpoint(id, 'urn:upnp-org:serviceId:TemperatureSetpoint1_Cool', temp);
             break;
     }
 
@@ -74,7 +74,7 @@ module.exports.setHvacFanMode = (req, res) => {
             mode = 'Off';
             break;
     }
-    global.vera.setMode(id, 'urn:upnp-org:serviceId:HVAC_FanOperatingMode1', mode )
+    global.module.setMode(id, 'urn:upnp-org:serviceId:HVAC_FanOperatingMode1', mode )
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })

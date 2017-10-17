@@ -17,7 +17,7 @@ module.exports.setAlarmArmedMode = (req, res) => {
             mode = 'Vacation'; break;
     }
 
-    global.vera.callAction(id, 'urn:micasaverde-com:serviceId:AlarmPartition2', 'RequestArmMode', 'State', mode, {'PINCode': code})
+    global.module.callAction(id, 'urn:micasaverde-com:serviceId:AlarmPartition2', 'RequestArmMode', 'State', mode, {'PINCode': code})
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
@@ -31,7 +31,7 @@ module.exports.setAlarmDisarmed = (req, res) => {
     let id = req.swagger.params.id.value;
     let code = req.swagger.params.pin.value;
 
-    global.vera.callAction(id, 'urn:micasaverde-com:serviceId:AlarmPartition2', 'RequestArmMode', 'State', 'Disarmed', {'PINCode': code})
+    global.module.callAction(id, 'urn:micasaverde-com:serviceId:AlarmPartition2', 'RequestArmMode', 'State', 'Disarmed', {'PINCode': code})
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
@@ -51,10 +51,10 @@ module.exports.setAlarmChimeState = (req, res) => {
     switch (state) {
         case 'on':
         case'off':
-            callAction = global.vera.callAction(id, 'urn:micasaverde-com:serviceId:VistaAlarmPanel1', 'SetChimeMode', 'Mode', state === 'on' ? '1' : '0', {'PINCode': code});
+            callAction = global.module.callAction(id, 'urn:micasaverde-com:serviceId:VistaAlarmPanel1', 'SetChimeMode', 'Mode', state === 'on' ? '1' : '0', {'PINCode': code});
             break;
         case 'toggle':
-            callAction = global.vera.callAction(id, 'urn:micasaverde-com:serviceId:VistaAlarmPanel1', 'ToggleChimeMode', null, {'PINCode': code});
+            callAction = global.module.callAction(id, 'urn:micasaverde-com:serviceId:VistaAlarmPanel1', 'ToggleChimeMode', null, {'PINCode': code});
             break;
     }
     callAction

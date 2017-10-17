@@ -5,7 +5,7 @@ module.exports.setLightState = (req, res) => {
     let id = req.swagger.params.id.value;
     let state = req.swagger.params.state.value;
 
-    global.vera.setTarget(id, 'urn:upnp-org:serviceId:SwitchPower1', state === 'on' ? 1 : 0)
+    global.module.setTarget(id, 'urn:upnp-org:serviceId:SwitchPower1', state === 'on' ? 1 : 0)
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
@@ -19,7 +19,7 @@ module.exports.setLightLevel = (req, res) => {
     let id = req.swagger.params.id.value;
     let value = req.swagger.params.level.value;
 
-    global.vera.setLoadLevelTarget(id, 'urn:upnp-org:serviceId:Dimming1', value)
+    global.module.setLoadLevelTarget(id, 'urn:upnp-org:serviceId:Dimming1', value)
         .then( (status) => {
             res.json( { data: { status: status }, result : 'ok' } );
         })
