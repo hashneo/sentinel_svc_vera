@@ -46,8 +46,14 @@ function vera(config) {
     const merge = require('deepmerge');
 
     const request = require('request');
-    const http = require('http');
-    const keepAliveAgent = new http.Agent({ keepAlive: true, maxSockets: 3 });
+
+    const http = new require('http');
+    const https = new require('https');
+
+    const keepAliveAgents = {
+        http: new http.Agent({keepAlive: true, maxSockets: 3}),
+        https: new https.Agent({keepAlive: true, maxSockets: 3})
+    };
 
     const categories = require('./device_categories.json');
 
@@ -80,10 +86,15 @@ function vera(config) {
 
         return new Promise( (fulfill, reject) => {
 
-            if ( config.systemid == null )
+            let agent  = null;
+
+            if ( config.systemid == null ) {
                 url = 'http://' + config.server + ':3480/data_request?output_format=json&id=' + url;
-            else
+                agent = keepAliveAgents.http;
+            } else {
                 url = 'https://' + config.server + '/' + config.user + '/' + config.password + '/' + config.systemid + '/data_request?output_format=json&id=' + url;
+                agent = keepAliveAgents.https;
+            }
 
             url += '&rand=' + Math.random();
 
@@ -92,7 +103,7 @@ function vera(config) {
             let options = {
                 url : url,
                 timeout : 90000,
-                agent: keepAliveAgent
+                agent: agent
             };
 
             try {
