@@ -179,7 +179,7 @@ function vera(config) {
         if ( variable )
             url += '&' + variable + '=' + value;
 
-        if (extraParameters != undefined) {
+        if (extraParameters !== undefined) {
             Object.keys(extraParameters).forEach(function (key) {
                 url += '&' + key + '=' + extraParameters[key];
             });
@@ -294,7 +294,7 @@ function vera(config) {
 
             call(url)
                 .then((data) => {
-                    if (data === null || data === undefined || data.DataVersion == undefined) {
+                    if (data === null || data === undefined || data.DataVersion === undefined) {
                         return reject('nothing returned')
                     }
                     lastDataVersion = data.DataVersion;
@@ -318,7 +318,7 @@ function vera(config) {
 
                 .then((status) => {
 
-                    if (status === undefined || status.devices == undefined) {
+                    if (status === undefined || status.devices === undefined) {
                         reject('no data returned');
                     }
 
@@ -363,12 +363,19 @@ function vera(config) {
                                 d.type = global.config.types[d.id];
                             }
                         }
-                        if (d.type != undefined) {
-                            console.log( JSON.stringify( d ) );
-                            devices.push(d);
+
+                        if ( global.config.hidden ){
+                            if ( global.config.hidden.find( id => id === d.id ) ) {
+                                d.type = undefined;
+                            }
                         }
 
-                        deviceCache.set(d.id, d);
+                        if (d.type !== undefined) {
+                            console.log( JSON.stringify( d ) );
+                            devices.push(d);
+
+                            deviceCache.set(d.id, d);
+                        }
                     }
 
                     fulfill(devices);
