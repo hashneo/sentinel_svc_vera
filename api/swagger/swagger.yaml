@@ -249,6 +249,34 @@ paths:
         default:
           $ref: '#/responses/Error'
 
+  /switch/{id}/{state}:
+    x-swagger-router-controller: switch
+    get:
+      operationId: setSwitchState
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      - in: path
+        name: state
+        required: true
+        type: string
+        enum: [
+          on,
+          off
+        ]
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
   /lock/{id}/{state}:
     x-swagger-router-controller: lock
     get:
