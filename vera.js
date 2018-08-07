@@ -456,12 +456,13 @@ function vera(config) {
                                         if (JSON.stringify(current) !== JSON.stringify(newVal)) {
 
                                             // We need to cache dimmable set values as Vera ignores them
+                                            /*
                                             if (d.type.startsWith('light.dimmable')) {
                                                 if (newVal.on) {
                                                     newVal['set'] = newVal.level;
                                                 }
                                             }
-
+                                            */
                                             statusCache.set(device.id, newVal);
                                         }
                                     } else {

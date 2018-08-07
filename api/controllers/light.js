@@ -8,7 +8,7 @@ module.exports.setLightState = (req, res) => {
     global.module.getDevice(id)
 
         .then ( (d) => {
-
+/*
             // if desired state is on and light is dimmable and was set, turn on via Dimming1
             if (state === 'on' && d.type.startsWith('light.dimmable')) {
                 let v = d.current;
@@ -26,7 +26,7 @@ module.exports.setLightState = (req, res) => {
                     return;
                 }
             }
-
+*/
             // All other cases fall through to standard on
             global.module.setTarget(id, 'urn:upnp-org:serviceId:SwitchPower1', state === 'on' ? 1 : 0)
                 .then((status) => {
