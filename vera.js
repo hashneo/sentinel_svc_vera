@@ -188,11 +188,18 @@ function vera(config) {
         return new Promise( ( fulfill, reject ) => {
             call(url)
                 .then( (data) =>{
-                    if ( data['u:' + action + 'Response'] && data['u:' + action + 'Response']['JobID'] ){
-                        fulfill('accepted');
-                    }else{
-                        reject('failed');
+                    let response = data['u:' + action + 'Response'];
+
+                    if ( response ) {
+                        if (response.JobID) {
+                            fulfill('scheduled');
+                        } else if (response.OK) {
+                            fulfill('accepted');
+                        }
+                        return;
                     }
+
+                    reject('failed');
                 })
                 .catch( (err) =>{
                     reject(err);
