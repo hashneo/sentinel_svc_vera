@@ -42,7 +42,6 @@ function vera(config) {
 
     const deviceCache = new NodeCache();
     const statusCache = new NodeCache();
-    const dimmerCache = new NodeCache();
 
     const merge = require('deepmerge');
 
@@ -122,19 +121,6 @@ function vera(config) {
             }
         } );
     }
-
-    this.getDevice = (id) => {
-
-        return new Promise( (fulfill, reject) => {
-            let d = deviceCache.get(id);
-
-            if (d) {
-                d['current'] = statusCache.get(id);
-            }
-
-            fulfill(d);
-        });
-    };
 
     this.getDevices = () => {
 
@@ -449,20 +435,10 @@ function vera(config) {
                                 let update = processStates(device['states']);
 
                                 if (update) {
-
                                     if (current !== undefined) {
                                         let newVal = merge(current, update);
 
                                         if (JSON.stringify(current) !== JSON.stringify(newVal)) {
-
-                                            // We need to cache dimmable set values as Vera ignores them
-                                            /*
-                                            if (d.type.startsWith('light.dimmable')) {
-                                                if (newVal.on) {
-                                                    newVal['set'] = newVal.level;
-                                                }
-                                            }
-                                            */
                                             statusCache.set(device.id, newVal);
                                         }
                                     } else {
