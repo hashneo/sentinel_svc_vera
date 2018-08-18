@@ -322,8 +322,8 @@ paths:
         required: true
         type: string
         enum: [
-          heat,
-          cool,
+          heating,
+          cooling,
           auto,
           away,
           home,
