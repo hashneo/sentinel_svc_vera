@@ -338,6 +338,12 @@ function vera(config) {
 
                         d['name'] = device['name'];
 
+                        if ( d.name.startsWith('_') )
+                            continue;
+
+                        if ( d.name.length == 1 && !isNaN(d['name']) )
+                            continue;
+
                         let room = status.rooms.find(function (r) {
                             return r.id == device.room
                         });
