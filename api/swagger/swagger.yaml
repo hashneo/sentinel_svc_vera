@@ -1,4 +1,5 @@
 ---
+---
 swagger: '2.0'
 info:
   description: ''
@@ -322,8 +323,8 @@ paths:
         required: true
         type: string
         enum: [
-          heating,
-          cooling,
+          heat,
+          cool,
           auto,
           away,
           home,

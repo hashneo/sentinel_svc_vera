@@ -6,10 +6,10 @@ module.exports.setHvacMode = (req, res) => {
     let mode = req.swagger.params.mode.value;
 
     switch (mode){
-        case 'heating':
+        case 'heat':
             mode = 'HeatOn';
             break;
-        case 'cooling':
+        case 'cool':
             mode = 'CoolOn';
             break;
         case 'auto':
