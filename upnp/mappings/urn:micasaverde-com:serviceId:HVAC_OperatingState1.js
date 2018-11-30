@@ -9,10 +9,10 @@ module.exports.process = (_data, _state) => {
                     _data['state'] = 'off';
                     break;
                 case 'Heating':
-                    _data['state'] = 'heating';
+                    _data['state'] = 'heat';
                     break;
                 case 'Cooling':
-                    _data['state'] = 'cooling';
+                    _data['state'] = 'cool';
                     break;
             }
     }
