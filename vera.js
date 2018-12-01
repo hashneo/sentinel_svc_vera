@@ -78,7 +78,7 @@ function vera(config) {
 
     statusCache.on( 'set', function( key, value ){
         let data = JSON.stringify( { module: 'vera', id : key, value : value });
-        console.log( 'sentinel.device.update => ' + data );
+        //console.log( 'sentinel.device.update => ' + data );
         pub.publish( 'sentinel.device.update', data);
     });
 
@@ -323,83 +323,83 @@ function vera(config) {
 
             call('sdata')
 
-                .then((status) => {
+            .then((status) => {
 
-                    if (status === undefined || status.devices === undefined) {
-                        reject('no data returned');
-                    }
+                if (status === undefined || status.devices === undefined) {
+                    reject('no data returned');
+                }
 
-                    let devices = [];
+                let devices = [];
 
-                    for (let i in status.devices) {
-                        let device = status.devices[i];
+                for (let i in status.devices) {
+                    let device = status.devices[i];
 
-                        let d = {'id': device.id};
+                    let d = {'id': device.id};
 
-                        d['name'] = device['name'];
+                    d['name'] = device['name'];
 
-                        if ( d.name.startsWith('_') )
-                            continue;
+                    if ( d.name.startsWith('_') )
+                        continue;
 
-                        if ( d.name.length == 1 && !isNaN(d['name']) )
-                            continue;
+                    if ( d.name.length == 1 && !isNaN(d['name']) )
+                        continue;
 
-                        let room = status.rooms.find(function (r) {
-                            return r.id == device.room
+                    let room = status.rooms.find(function (r) {
+                        return r.id == device.room
+                    });
+
+                    if (room !== undefined) {
+                        let section = status.sections.find(function (r) {
+                            return r.id == room.section;
                         });
+                        d['where'] = {'location': section.name, 'room': room.name};
+                    }
 
-                        if (room !== undefined) {
-                            let section = status.sections.find(function (r) {
-                                return r.id == room.section;
-                            });
-                            d['where'] = {'location': section.name, 'room': room.name};
+                    let type = categories[device.category];
+
+                    if (type !== undefined) {
+                        d['type'] = type.name;
+
+                        let subcategory = type.subcategories[device.subcategory];
+
+                        if (subcategory !== undefined) {
+                            d['type'] = d['type'] + '.' + subcategory.name;
                         }
 
-                        let type = categories[device.category];
-
-                        if (type !== undefined) {
-                            d['type'] = type.name;
-
-                            let subcategory = type.subcategories[device.subcategory];
-
-                            if (subcategory !== undefined) {
-                                d['type'] = d['type'] + '.' + subcategory.name;
-                            }
-
-                            if (type.variable !== undefined && type.variable !== "") {
-                                d['current'] = device[type.variable];
-                            }
-                        }
-
-                        if ( global.config.types ){
-                            if ( global.config.types[d.id] ) {
-                                d.type = global.config.types[d.id];
-                            }
-                        }
-
-                        if ( global.config.hidden ){
-                            if ( global.config.hidden.find( id => id === d.id ) ) {
-                                d.type = undefined;
-                            }
-                        }
-
-                        if (d.type !== undefined) {
-                            console.log( JSON.stringify( d ) );
-                            devices.push(d);
-
-                            deviceCache.set(d.id, d);
+                        if (type.variable !== undefined && type.variable !== "") {
+                            d['current'] = device[type.variable];
                         }
                     }
 
-                    fulfill(devices);
+                    if ( global.config.types ){
+                        if ( global.config.types[d.id] ) {
+                            d.type = global.config.types[d.id];
+                        }
+                    }
 
-                    console.log("System load complete.");
+                    if ( global.config.hidden ){
+                        if ( global.config.hidden.find( id => id === d.id ) ) {
+                            d.type = undefined;
+                        }
+                    }
 
-                })
-                .catch((err) => {
-                    reject(err);
-                })
-        });
+                    if (d.type !== undefined) {
+                        console.log( JSON.stringify( d ) );
+                        devices.push(d);
+
+                        deviceCache.set(d.id, d);
+                    }
+                }
+
+                fulfill(devices);
+
+                console.log("System load complete.");
+
+            })
+            .catch((err) => {
+                reject(err);
+            })
+    });
     }
 
     this.Reload = () => {
