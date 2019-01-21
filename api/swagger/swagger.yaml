@@ -105,6 +105,46 @@ paths:
         default:
           $ref: '#/responses/Error'
 
+  /device/{id}/poll:
+    x-swagger-router-controller: system
+    get:
+      operationId: pollDevice
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
+  /device/{id}/reconfigure:
+    x-swagger-router-controller: system
+    get:
+      operationId: reconfigureDevice
+      security:
+      - Oauth:
+        - user
+      parameters:
+      - in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        200:
+          description: ok
+          schema:
+            type: object
+        default:
+          $ref: '#/responses/Error'
+
   /light/{id}/rgb/color:
     x-swagger-router-controller: rgb
     get:

@@ -288,6 +288,10 @@ function vera(config) {
         return this.callAction(id, service, 'SetMode', 'NewMode', value);
     };
 
+    this.reconfigureDevice = (id) => {
+        return this.callAction(id, 'urn:micasaverde-com:serviceId:HaDevice1', 'Reconfigure');
+    };
+
     this.pollDevice = (id) => {
         return this.callAction(id, 'urn:micasaverde-com:serviceId:HaDevice1', 'Poll');
     };
