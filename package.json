@@ -18,7 +18,7 @@
     "newrelic": "^4.9.0",
     "node-cache": "^4.2.0",
     "q": "^1.5.1",
-    "redis": "^2.8.0",
+    "redis": "^3.0.2",
     "request": "^2.88.0",
     "superagent": "^4.0.0",
     "superagent-proxy": "^2.0.0",
