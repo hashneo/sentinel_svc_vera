@@ -15,17 +15,15 @@ spec:
         -
           name: sentinel-vera
           image: docker.steventaylor.me/sentinel/services/vera/vera-x86_64:latest
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           env:
           - name: PORT
             value: "5000"
           - name: CONSUL
-            value: "consul"
+            value: consul
+          - name: NEW_RELIC_NO_CONFIG_FILE
+            value: "false"
           ports:
-            -
-              containerPort: 5000
-              protocol: TCP
-      imagePullSecrets:
-      - name: regcred
-      nodeSelector:
-          beta.kubernetes.io/arch: amd64
+          -
+            containerPort: 5000
+            protocol: TCP
